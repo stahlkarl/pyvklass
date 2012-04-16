@@ -240,3 +240,13 @@ class Vklass:
 		
 		return time
 
+	def status(self):
+		# This one is called scoreboard on vklass.se. Ugly and hackish, fix later..
+		html = urllib2.urlopen("https://www.vklass.se/Handler/scoreboard.ashx").read()
+		info = []
+		for trash in cre.all_between("</span>", "</dd><dt><a href=", html):
+			info.append(trash.split(">")[-1])
+
+		status = {'guestbook': info[0], 'messages': info[1], 'forum': info[2], 'friends': info[3]}
+
+		return status
