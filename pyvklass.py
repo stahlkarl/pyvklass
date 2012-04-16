@@ -112,7 +112,7 @@ class Vklass:
 		self.dbc.commit()
 	
 	def get_chat(self):
-		chatheartbeat_url = "https://www.vklass.se/Handler/chathandler.ashx?action=chatheartbeat"
+		chatheartbeat_url = "%s/Handler/chathandler.ashx?action=chatheartbeat" % self.base_url
 		chat_messages_raw = urllib2.urlopen(chatheartbeat_url).read().replace("\n", "")
 		chat_messages     = []
 		for message in json.loads(chat_messages_raw)['items']:
@@ -124,6 +124,36 @@ class Vklass:
 
 		return chat_messages
 	
+	def news_listing(self):
+		html     = urllib2.urlopen("https://www.vklass.se/MySchool.aspx").read()
+		dirty_news_ids = cre.all_between('<a id="ctl00_ContentPlaceHolder2_newsRepeater_ctl', "&amp;", html)
+		clean_news_ids = []
+		for dirty_news_id in dirty_news_ids:
+			clean_news_id = dirty_news_id.split("=")[2]
+			if int(clean_news_id) not in clean_news_ids:
+				clean_news_ids.append(int(clean_news_id))
+	
+		return clean_news_ids
+
+	def news(self, news_id):
+		news           = {"body": "", "attached": {"url": "", "filename": ""}}
+		html           = urllib2.urlopen("https://www.vklass.se/SchoolNews.aspx?id=%i" % news_id).read()
+		news['body']   = cre.htmlstrip(cre.between('<span id="ctl00_ContentPlaceHolder2_newsShortLabel">', '</span>', html))
+		attached_file_html_chunk = cre.between('<a id="ctl00_ContentPlaceHolder2_NewsAttachmentLink" href="', '</a>', html)
+		if attached_file_html_chunk != "":
+			news['attached']['url'] = attached_file_html_chunk.split('">')[0]
+			news['attached']['filename'] = attached_file_html_chunk.split('">')[1]
+
+		return news
+	
+	def all_news(self):
+		all_news = []
+		for news_id in self.news_listing():
+			news = self.news(news_id)
+			all_news.append(news)
+
+		return all_news
+
 	def download(self, url, output):
 		if os.path.exists(output):
 			client.log("%s already exists" % output)

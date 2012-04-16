@@ -5,7 +5,7 @@ Info as JSON:
 	* Messages
 	* Events
 	* Guestbook comments
-	* News
+	* News                                             DONE
 	* Food menu
 	* Absence report
 	* Courses
@@ -14,6 +14,7 @@ Info as JSON:
 	* Personnel in you school
 	* Class calendar
 	* 25 latest profile visitors
+	* Schedule
 
 Actions: 
 	* Send chat                                        DONE
