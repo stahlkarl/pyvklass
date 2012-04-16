@@ -9,7 +9,7 @@ Info as JSON:
 	* News                                             DONE
 	* Food menu
 	* Status (guestbook, mess, forum etc..)            DONE
-	* Absence report
+	* Detailed absence report
 	* Courses
 	* Grades
 	* Students  in your school

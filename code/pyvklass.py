@@ -192,7 +192,6 @@ class Vklass:
 	
 	def class_uid(self):
 		html      = urllib2.urlopen("%s/classlist.aspx" % self.base_url).read()
-		client.dump(html)
 		class_uid = cre.between("classUID=\" \+ '", "'\)", html)
 
 		return class_uid
