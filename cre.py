@@ -14,8 +14,11 @@ def all_between(first, second, string):
     
 def htmlstrip(string):
 	p = re.compile(r'<.*?>')
-	stripped = p.sub('', string).replace(chr(10), "")
+	stripped = html_breakstrip(p.sub('', string))
 	p = re.compile(r'\s+')
 	#pars = HTMLParser.HTMLParser()
 	#return pars.unescape(p.sub(' ', stripped))
 	return p.sub(' ', stripped)
+
+def html_breakstrip(html):
+	return html.replace(chr(10), "")

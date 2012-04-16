@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import time, getpass, os
+import time, getpass, os, urllib2, random
 disable_logging = False
 
 def query_string(msg):
@@ -22,3 +22,20 @@ def pwinput(query):
 def ensure_dir(directory):
 	if not os.path.exists(directory):
 		os.makedirs(directory)
+
+def download(url, filename):
+	if os.path.exists(filename):
+		log("%s already exists" % filename)
+	else:
+		log("Downloading %s --> %s" % (url, filename))
+		data = urllib2.urlopen(url).read()
+		if len(data) > 0:
+			f = open(filename, 'w')
+			f.write(data)
+			f.close()
+		log("Done downloading %s" % filename)
+
+def dump(data):
+	f = open("dump", "w")
+	f.write(data)
+	f.close()

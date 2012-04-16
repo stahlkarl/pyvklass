@@ -84,7 +84,7 @@ class Vklass:
 				self.dbc.commit()
 				client.ensure_dir(self.profile_picture_dir)
 				if avatar_filename:
-					self.download('%s/photo/large/%s' % (self.base_url, avatar_filename, self.profile_picture_dir + "/" + avatar_filename))
+					client.download('%s/photo/large/%s' % (self.base_url, avatar_filename, self.profile_picture_dir + "/" + avatar_filename))
 				info = {"profile_id" : profile_id, "profile_id2": profile_id2, "name" : profile_name, "class" : profile_class, "age" : age, "msn" : msn, "email" : email, "cellphone_number" : cellphone_number, "school" : school, "avatar_filename" : avatar_filename}
 			except:
 				client.log("Could not fetch data from %s" % lookup_url)
@@ -125,7 +125,7 @@ class Vklass:
 		return chat_messages
 	
 	def news_listing(self):
-		html     = urllib2.urlopen("https://www.vklass.se/MySchool.aspx").read()
+		html     = urllib2.urlopen("%s/MySchool.aspx" % self.base_url).read()
 		dirty_news_ids = cre.all_between('<a id="ctl00_ContentPlaceHolder2_newsRepeater_ctl', "&amp;", html)
 		clean_news_ids = []
 		for dirty_news_id in dirty_news_ids:
@@ -156,7 +156,7 @@ class Vklass:
 	
 	def latest_profile_visitors(self):
 		visitors = []
-		html     = urllib2.urlopen("https://www.vklass.se/UserVisitors.aspx").read()
+		html     = urllib2.urlopen("%s/UserVisitors.aspx" % self.base_url).read()
 		trash    = cre.all_between('<td class="logg-name">', '</span></td>', html)
 		for trash in trash:
 			visitor = {}
@@ -165,13 +165,60 @@ class Vklass:
 			visitors.append(visitor)
 
 		return visitors
+	
+	def exam_statistics(self, exam_id):
+		# The exam_id seems to increment by one for every new exam and they start at 1 and is 2011-04-16 around 8000.
 
-	def download(self, url, output):
-		if os.path.exists(output):
-			client.log("%s already exists" % output)
+		html                        = urllib2.urlopen("%s/ExamStatistics.aspx?id=%i" % (self.base_url, exam_id)).read()
+		critical_error_messages = ["existerar ej"]
+		for error_message in critical_error_messages:
+			if error_message in html:
+				return None
 		else:
-			client.log("Downloading %s --> %s" % (url, output))
-			f = open(output, 'w')
-			f.write(urllib2.urlopen(url).read())
-			f.close()
-			client.log("Download of %s --> %s | Complete" % (url, output))
+			exam                        = {"possible_grades": None, "exam_participants": None, "course_participants": None, "grades": None}
+			exam['name']                = cre.between('<span id="ctl00_ContentPlaceHolder2_nameLabel>"', '</span>', html)
+			exam['course']              = cre.between('<span id="ctl00_ContentPlaceHolder2_courseLabel">', '</span>', html)
+			exam['type']                = cre.between('<span id="ctl00_ContentPlaceHolder2_typeLabel">', '</span>', html).replace("  ", "")
+			exam['date']                = cre.between('<span id="ctl00_ContentPlaceHolder2_dateLabel">', '</span>', html)
+			if "ej statistik" not in html:
+				exam['possible_grades']     = cre.between('<span id="ctl00_ContentPlaceHolder2_gradingLabel">', '</span>', html).split("/")
+				exam['exam_participants']   = cre.between('<span id="ctl00_ContentPlaceHolder2_numberLabel">', '</span>', html).split(" ")[0]
+				exam['course_participants'] = cre.between('<span id="ctl00_ContentPlaceHolder2_numberLabel">', '</span>', html).split(" ")[2]
+				exam['grades']              = {}
+				for offset in range(len(exam['possible_grades'])):
+					exam['grades'][exam['possible_grades'][offset]] = cre.between('<span id="ctl00_ContentPlaceHolder2_infoLabel">', '</span>', html).replace(" ", "").split(":")[1 + offset].split("<")[0]
+	
+			return exam
+	
+	def class_uid(self):
+		html      = urllib2.urlopen("%s/classlist.aspx" % self.base_url).read()
+		client.dump(html)
+		class_uid = cre.between("classUID=\" \+ '", "'\)", html)
+
+		return class_uid
+
+	def class_calendar_exam_ids(self):
+		url  = "%s/ClassCalendar.aspx?id=%s" % (self.base_url, self.class_uid())
+		html = urllib2.urlopen(url).read()
+		client.dump(html)
+		ids = [int(id) for id in cre.all_between('<a href="ExamStatistics\\.aspx\\?id=', '&', html)]
+
+		return ids
+	
+	def class_calendar_exams(self):
+		exams = []
+		for exam_id in self.class_calendar_exam_ids():
+			exam_data = self.exam_statistics(exam_id)
+			exams.append(exam_data)
+			
+		return exams
+	
+	def class_events(self):
+		events = []
+		html = urllib2.urlopen("%s/ClassCalendar.aspx?id=%s" % (self.base_url, self.class_uid())).read()
+		event_chunks = cre.all_between('<span id="ctl00_ContentPlaceHolder2_monthsRepeater_ctl01_eventsRepeater_ctl0._topicLabel">Klassh..ndelse: ', '</span></dd>', html)
+		for trash in event_chunks:
+			event = {"name": trash.split("</span>")[0], "description": trash.split('">Beskrivning: ')[-1]}
+			events.append(event)
+
+		return events	
