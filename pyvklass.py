@@ -222,3 +222,21 @@ class Vklass:
 			events.append(event)
 
 		return events	
+
+	def time_summary(self):
+		# Presence the latest 30 days
+		html     = urllib2.urlopen("https://www.vklass.se/Results/default.aspx").read()
+		trash    = cre.between('<span id="ctl00_ContentPlaceHolder2_attendanceMinutesLabel">', '</span>', html).split(" ")
+		time = {"present": {}, "absent": {}}
+		time['scheduled_minutes'] = int(trash[6])
+
+		time['present']['percentage'] = int(trash[0])
+		time['present']['minutes'] = int(trash[3])
+
+		time['absent']['minutes'] = time['scheduled_minutes'] - time['present']['minutes']
+		time['absent']['late_arrival_minutes'] = int(trash[10])
+		time['absent']['approved_percentage'] = int(trash[14])
+		time['absent']['unapproved_percentage'] = int(trash[18])
+		
+		return time
+
