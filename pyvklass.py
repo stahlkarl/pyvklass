@@ -214,8 +214,8 @@ class Vklass:
 		return exams
 	
 	def class_events(self):
-		events = []
-		html = urllib2.urlopen("%s/ClassCalendar.aspx?id=%s" % (self.base_url, self.class_uid())).read()
+		events       = []
+		html         = urllib2.urlopen("%s/ClassCalendar.aspx?id=%s" % (self.base_url, self.class_uid())).read()
 		event_chunks = cre.all_between('<span id="ctl00_ContentPlaceHolder2_monthsRepeater_ctl01_eventsRepeater_ctl0._topicLabel">Klassh..ndelse: ', '</span></dd>', html)
 		for trash in event_chunks:
 			event = {"name": trash.split("</span>")[0], "description": trash.split('">Beskrivning: ')[-1]}
