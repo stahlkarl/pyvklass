@@ -153,6 +153,18 @@ class Vklass:
 			all_news.append(news)
 
 		return all_news
+	
+	def latest_profile_visitors(self):
+		visitors = []
+		html     = urllib2.urlopen("https://www.vklass.se/UserVisitors.aspx").read()
+		trash    = cre.all_between('<td class="logg-name">', '</span></td>', html)
+		for trash in trash:
+			visitor = {}
+			visitor['name'] = trash.split('"')[3]
+			visitor['time'] = trash.split(">")[-1]
+			visitors.append(visitor)
+
+		return visitors
 
 	def download(self, url, output):
 		if os.path.exists(output):
