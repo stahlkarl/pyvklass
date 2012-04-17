@@ -241,7 +241,7 @@ class Vklass:
 
 	def status(self):
 		# This one is called scoreboard on vklass.se. Ugly and hackish, fix later..
-		html = urllib2.urlopen("https://www.vklass.se/Handler/scoreboard.ashx").read()
+		html = urllib2.urlopen("%s/Handler/scoreboard.ashx" % self.base_url).read()
 		info = []
 		for trash in cre.all_between("</span>", "</dd><dt><a href=", html):
 			info.append(trash.split(">")[-1])
@@ -252,8 +252,8 @@ class Vklass:
 	
 	def current_schedule(self):
 		# Will show the current schedule for this week. Ugly and hackish, fix later..
-		html = urllib2.urlopen("%s/schema.aspx" % self.base_url).read()
-		lessons = {"monday": [], "tuesday": [], "wednesday": [], "thursday": [], "friday": []}
+		html     = urllib2.urlopen("%s/schema.aspx" % self.base_url).read()
+		lessons  = {"monday": [], "tuesday": [], "wednesday": [], "thursday": [], "friday": []}
 		for chunk in cre.all_between('<div class="LessonInfoContainer"', '</td>', html):
 			name = chunk.split("<br />")[-3].split("<span>")[-1]
 			room = chunk.replace("</span></div>", "").split(">")[-1]
@@ -262,10 +262,10 @@ class Vklass:
 					room = int(thingie)
 				except:
 					pass
-			time = cre.between('px;">', "<br />", chunk)
-			day = time.split(" ")[0]
-			from_hour = time.split(" ")[1]
-			to_hour = time.split(" ")[3]
+			time             = cre.between('px;">', "<br />", chunk)
+			day              = time.split(" ")[0]
+			from_hour        = time.split(" ")[1]
+			to_hour          = time.split(" ")[3]
 			day_replacements = [["M", "monday"], ["Ti", "tuesday"], ["Ons", "wednesday"], ["To", "thursday"], ["F", "friday"]] 
 			for replacement in day_replacements:
 				if day.startswith(replacement[0]):
@@ -273,3 +273,9 @@ class Vklass:
 			lesson = {"name": name, "room": room, "from": from_hour, "to": to_hour}
 			lessons[day].append(lesson)
 		return lessons
+	
+	def courses(self):
+		html    = urllib2.urlopen("%s/courselist.aspx" % self.base_url).read()
+		courses = cre.all_between('<td class="kurs"><a id="ctl00_ContentPlaceHolder2_StudentRepeater_ctl.._courseLink" href="Course.aspx\?id=.{5}">', '</a>', html)
+		
+		return courses

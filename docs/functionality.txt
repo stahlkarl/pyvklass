@@ -10,7 +10,7 @@ Info as dictionary:
 	* Food menu
 	* Status (guestbook, mess, forum etc..)            DONE
 	* Detailed absence report
-	* Courses
+	* Courses                                          DONE
 	* Grades
 	* Students  in your school
 	* Personnel in you school
