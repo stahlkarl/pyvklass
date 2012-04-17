@@ -13,15 +13,20 @@ def all_between(first, second, string):
     return re.compile(first + '(.*?)' + second, re.DOTALL |  re.IGNORECASE).findall(string)
     
 def htmlstrip(string):
-	p = re.compile(r'<.*?>')
+	p        = re.compile(r'<.*?>')
 	stripped = html_breakstrip(p.sub('', string))
-	p = re.compile(r'\s+')
-	#pars = HTMLParser.HTMLParser()
-	#return pars.unescape(p.sub(' ', stripped))
 	return p.sub(' ', stripped)
+
+def unescape(string):
+	pars = HTMLParser.HTMLParser()
+	p    = re.compile(r'\s+')
+	return pars.unescape(p.sub(' ', string))
 
 def html_breakstrip(html):
 	return html.replace("\n", "").replace("\r", "")
 
 def spacestrip(text):
 	return re.sub(" +", " ", text)
+
+def prettify(text):
+	return unescape(htmlstrip(html_breakstrip(spacestrip(text))))

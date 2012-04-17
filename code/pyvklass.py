@@ -292,3 +292,23 @@ class Vklass:
 					menu[day[1]] = meals[id]
 
 		return menu
+	
+	def message(self, message_id):
+		html                           = urllib2.urlopen("%s/Messaging/MessageRead.aspx?id=%i" % (self.base_url, message_id)).read()
+		message                        = {"attachments": [], "participants": []}
+		message['body']                = cre.prettify(cre.between('<span id="ctl00_ContentPlaceHolder2_postRepeater_ctl00_textLabel">', '</span>', html))
+		trash                          = cre.between('<a id="ctl00_ContentPlaceHolder2_creatorLink" href="/User.aspx\?id=', '</a></h3>', html).split('">')
+		message['creator']             = {'id': int(trash[0]), "name": trash[1]}
+		participants_dirty_html_chunks = cre.between('<h3>Deltagare: ', '</h3>', html).split(', ')
+		for dirty_participant_chunk in participants_dirty_html_chunks:
+			id                         = int(cre.between('<a href="/User.aspx\?id=', '">', dirty_participant_chunk))
+			name                       = cre.between('">', '</a>', dirty_participant_chunk)
+			participant                = {"id": id, "name": name}
+			message['participants'].append(participant)
+		
+		dirty_attachment_html_chunks   = cre.all_between('_AttachmentLink" href="', '</a></li>', html)
+		for chunk in dirty_attachment_html_chunks:
+			attachment                 = {"url": chunk.split('"')[0], "filename": chunk.split('">')[-1]}
+			message['attachments'].append(attachment)
+
+		return message

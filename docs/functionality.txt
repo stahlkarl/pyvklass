@@ -4,6 +4,8 @@ Info as dictionary:
 	* Chat messages                                    DONE
 	* Profile information                              DONE
 	* Messages
+		* Get message data by id                       DONE
+		* Get all message ids
 	* Events
 	* Guestbook comments
 	* News                                             DONE
