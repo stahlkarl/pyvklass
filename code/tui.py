@@ -15,7 +15,7 @@ class Tui(Cmd):
 	
 	def do_status(self, args):
 		status = self.v.status()
-		client.log("Guestbook: %s | Messages: %s | Forum: %s | Friends: %s" % (status['guestbook'], status['messages'], status['forum'], status['friends']))
+		client.log("Guestbook: %s | Messages: %s | Forum: %s | Friend requests: %s" % (status['guestbook'], status['messages'], status['forum'], status['friends']))
 	
 	def do_news(self, args):
 		client.log("Fetching news")
