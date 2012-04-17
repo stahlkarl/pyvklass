@@ -23,7 +23,7 @@ class Vklass:
 		self.password     = password
 		vklass_cj         = cookielib.CookieJar()
 		vklass_opener     = urllib2.build_opener(urllib2.HTTPCookieProcessor(vklass_cj))
-		vklass_opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10')]
+		vklass_opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.11')]
 		urllib2.install_opener(vklass_opener)
 
 		index           = urllib2.urlopen(self.base_url).read()
@@ -324,3 +324,14 @@ class Vklass:
 			message['attachments'].append(attachment)
 
 		return message
+	
+	def first_message_ids(self):
+		return [int(x) for x in cre.all_between('href="MessageRead.aspx\?id=', '&amp;', urllib2.urlopen(self.base_url + "/Messaging/Messages.aspx").read())]
+	
+	def first_messages(self):
+		messages = []
+		for message_id in self.first_message_ids():
+			message = self.message(message_id)
+			messages.append(message)
+
+		return messages

@@ -6,6 +6,7 @@ Info as dictionary:
 	* Messages
 		* Get message data by id                       DONE
 		* Get all message ids
+		* Get first message ids                        DONE
 	* Events
 	* Guestbook comments
 	* News                                             DONE
