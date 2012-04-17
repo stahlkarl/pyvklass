@@ -279,3 +279,16 @@ class Vklass:
 		courses = cre.all_between('<td class="kurs"><a id="ctl00_ContentPlaceHolder2_StudentRepeater_ctl.._courseLink" href="Course.aspx\?id=.{5}">', '</a>', html)
 		
 		return courses
+	
+	def food_menu(self):
+		menu             = {"monday": "", "tuesday": "", "wednesday": "", "thursday": "", "friday": ""}
+		html             = urllib2.urlopen("https://www.vklass.se/MySchool.aspx").read()
+		days             = cre.all_between('<strong><span id="ctl00_ContentPlaceHolder2_lunchRepeater_ctl.._dayLabel">', '</span></strong>', html)
+		meals            = cre.all_between('<span id="ctl00_ContentPlaceHolder2_lunchRepeater_ctl.._dayMenuLabel">', '</span>', html.replace("<br />", ""))
+
+		for id in range(len(days)):
+			for day in [["M", "monday"], ["Ti", "tuesday"], ["Ons", "wednesday"], ["To", "thursday"], ["F", "friday"]]:
+				if days[id].startswith(day[0]):
+					menu[day[1]] = meals[id]
+
+		return menu

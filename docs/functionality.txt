@@ -7,7 +7,7 @@ Info as dictionary:
 	* Events
 	* Guestbook comments
 	* News                                             DONE
-	* Food menu
+	* Food menu                                        DONE
 	* Status (guestbook, mess, forum etc..)            DONE
 	* Detailed absence report
 	* Courses                                          DONE
