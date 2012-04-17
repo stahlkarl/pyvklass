@@ -1,29 +1,30 @@
-Info as dictionary:
-	* Time summary (presence, late arrival etc)        DONE
+Info as dictionary:                                 in api | implimented in TUI
+	* Time summary (presence, late arrival etc)        DONE TUI
 	* Users online                                     DONE
 	* Chat messages                                    DONE
 	* Profile information                              DONE
 	* Messages
-		* Get message data by id                       DONE
+		* Get message data by id                       DONE TUI
 		* Get all message ids
-		* Get first message ids                        DONE
+		* Get first message ids                        DONE TUI
 	* Events
 	* Guestbook comments
-	* News                                             DONE
-	* Food menu                                        DONE
-	* Status (guestbook, mess, forum etc..)            DONE
+	* News                                             DONE TUI
+	* Food menu                                        DONE TUI
+	* Status (guestbook, mess, forum etc..)            DONE TUI
 	* Detailed absence report
-	* Courses                                          DONE
+	* Courses                                          DONE TUI
 	* Grades
 	* Students  in your school
 	* Personnel in you school
-	* Class exams                                      DONE
-	* Class events                                     DONE
-	* Exam stats                                       DONE
-	* 25 latest profile visitors                       DONE
-	* Schedule                                         DONE
+	* Class exams                                      DONE TUI
+	* Class events                                     DONE TUI
+	* Exam stats                                       DONE TUI
+	* 25 latest profile visitors                       DONE TUI
+	* Schedule                                         DONE TUI
 
 Actions: 
+	* Login                                            DONE TUI
 	* Send chat                                        DONE
 	* Send messages
 	* Write in guestbook
@@ -33,4 +34,4 @@ Actions:
 
 General:
 	* Download file                                    DONE
-	* Create TUI
+	* Create TUI                                       Implementing functionality atm

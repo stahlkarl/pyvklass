@@ -136,9 +136,10 @@ class Vklass:
 		return clean_news_ids
 
 	def news(self, news_id):
-		news           = {"body": "", "attached": {"url": "", "filename": ""}}
+		news           = {"title": "", "body": "", "attached": {"url": "", "filename": ""}}
 		html           = urllib2.urlopen("https://www.vklass.se/SchoolNews.aspx?id=%i" % news_id).read()
-		news['body']   = cre.htmlstrip(cre.between('<span id="ctl00_ContentPlaceHolder2_newsShortLabel">', '</span>', html))
+		news['body']   = cre.prettify(cre.between('<span id="ctl00_ContentPlaceHolder2_newsShortLabel">', '</span>', html))
+		news['title']  = cre.prettify(cre.between('<span id="ctl00_ContentPlaceHolder2_nameLabel">', '</span>', html))
 		attached_file_html_chunk = cre.between('<a id="ctl00_ContentPlaceHolder2_NewsAttachmentLink" href="', '</a>', html)
 		if attached_file_html_chunk != "":
 			news['attached']['url'] = attached_file_html_chunk.split('">')[0]
@@ -151,6 +152,7 @@ class Vklass:
 		for news_id in self.news_listing():
 			news = self.news(news_id)
 			all_news.append(news)
+		all_news.reverse()
 
 		return all_news
 	
@@ -161,8 +163,11 @@ class Vklass:
 		for trash in trash:
 			visitor = {}
 			visitor['name'] = trash.split('"')[3]
+			if visitor['name'].endswith('_dateLabel'):
+				visitor['name'] = "anonymous"
 			visitor['time'] = trash.split(">")[-1]
 			visitors.append(visitor)
+		visitors.reverse()
 
 		return visitors
 	
@@ -176,7 +181,7 @@ class Vklass:
 				return None
 		else:
 			exam                        = {"possible_grades": None, "exam_participants": None, "course_participants": None, "grades": None}
-			exam['name']                = cre.between('<span id="ctl00_ContentPlaceHolder2_nameLabel>"', '</span>', html)
+			exam['name']                = cre.between('<span id="ctl00_ContentPlaceHolder2_nameLabel">', '</span>', html)
 			exam['course']              = cre.between('<span id="ctl00_ContentPlaceHolder2_courseLabel">', '</span>', html)
 			exam['type']                = cre.between('<span id="ctl00_ContentPlaceHolder2_typeLabel">', '</span>', html).replace("  ", "")
 			exam['date']                = cre.between('<span id="ctl00_ContentPlaceHolder2_dateLabel">', '</span>', html)
@@ -215,7 +220,7 @@ class Vklass:
 	def class_events(self):
 		events       = []
 		html         = urllib2.urlopen("%s/ClassCalendar.aspx?id=%s" % (self.base_url, self.class_uid())).read()
-		event_chunks = cre.all_between('<span id="ctl00_ContentPlaceHolder2_monthsRepeater_ctl01_eventsRepeater_ctl0._topicLabel">Klassh..ndelse: ', '</span></dd>', html)
+		event_chunks = cre.all_between('<span id="ctl00_ContentPlaceHolder2_monthsRepeater_ctl.._eventsRepeater_ctl.._topicLabel">Klassh..ndelse: ', '</span></dd>', html)
 		for trash in event_chunks:
 			event = {"name": trash.split("</span>")[0], "description": trash.split('">Beskrivning: ')[-1]}
 			events.append(event)
@@ -284,7 +289,7 @@ class Vklass:
 		menu             = {"monday": "", "tuesday": "", "wednesday": "", "thursday": "", "friday": ""}
 		html             = urllib2.urlopen("https://www.vklass.se/MySchool.aspx").read()
 		days             = cre.all_between('<strong><span id="ctl00_ContentPlaceHolder2_lunchRepeater_ctl.._dayLabel">', '</span></strong>', html)
-		meals            = cre.all_between('<span id="ctl00_ContentPlaceHolder2_lunchRepeater_ctl.._dayMenuLabel">', '</span>', html.replace("<br />", ""))
+		meals            = cre.all_between('<span id="ctl00_ContentPlaceHolder2_lunchRepeater_ctl.._dayMenuLabel">', '</span>', html.replace("<br />", "").replace("\n", "").replace("\r", ""))
 
 		for id in range(len(days)):
 			for day in [["M", "monday"], ["Ti", "tuesday"], ["Ons", "wednesday"], ["To", "thursday"], ["F", "friday"]]:
@@ -296,7 +301,9 @@ class Vklass:
 	def message(self, message_id):
 		html                           = urllib2.urlopen("%s/Messaging/MessageRead.aspx?id=%i" % (self.base_url, message_id)).read()
 		message                        = {"attachments": [], "participants": [], "posts": []}
-		message['body']                = cre.prettify(cre.all_between('<span id="ctl00_ContentPlaceHolder2_postRepeater_ctl.._posterLabel">', '</p>', html)[-1])
+		message['body']                = cre.prettify(cre.all_between('<span id="ctl00_ContentPlaceHolder2_postRepeater_ctl.._textLabel">', '</span>', html)[-1])
+		message['title']               = cre.prettify(cre.between('<span id="ctl00_ContentPlaceHolder2_topicLabel">', '</span>', html))
+		message['created']             = cre.prettify(cre.between('<span id="ctl00_ContentPlaceHolder2_dateLabel">', '</span>', html))
 		trash                          = cre.all_between('<span id="ctl00_ContentPlaceHolder2_postRepeater_ctl.._posterLabel">', '</p>', html)
 		del trash[-1]
 		for trash in trash:
