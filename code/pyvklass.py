@@ -224,7 +224,7 @@ class Vklass:
 
 	def time_summary(self):
 		# Presence the latest 30 days
-		html     = urllib2.urlopen("https://www.vklass.se/Results/default.aspx").read()
+		html     = urllib2.urlopen("%s/Results/default.aspx" % self.base_url).read()
 		trash    = cre.between('<span id="ctl00_ContentPlaceHolder2_attendanceMinutesLabel">', '</span>', html).split(" ")
 		time = {"present": {}, "absent": {}}
 		time['scheduled_minutes'] = int(trash[6])
@@ -252,7 +252,7 @@ class Vklass:
 	
 	def current_schedule(self):
 		# Will show the current schedule for this week. Ugly and hackish, fix later..
-		html = urllib2.urlopen("https://www.vklass.se/schema.aspx").read()
+		html = urllib2.urlopen("%s/schema.aspx" % self.base_url).read()
 		lessons = {"monday": [], "tuesday": [], "wednesday": [], "thursday": [], "friday": []}
 		for chunk in cre.all_between('<div class="LessonInfoContainer"', '</td>', html):
 			name = chunk.split("<br />")[-3].split("<span>")[-1]
