@@ -18,7 +18,7 @@ Info as JSON:
 	* Class events                                     DONE
 	* Exam stats                                       DONE
 	* 25 latest profile visitors                       DONE
-	* Schedule
+	* Schedule                                         DONE
 
 Actions: 
 	* Send chat                                        DONE

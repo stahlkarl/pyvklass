@@ -249,3 +249,27 @@ class Vklass:
 		status = {'guestbook': info[0], 'messages': info[1], 'forum': info[2], 'friends': info[3]}
 
 		return status
+	
+	def current_schedule(self):
+		# Will show the current schedule for this week. Ugly and hackish, fix later..
+		html = urllib2.urlopen("https://www.vklass.se/schema.aspx").read()
+		lessons = {"monday": [], "tuesday": [], "wednesday": [], "thursday": [], "friday": []}
+		for chunk in cre.all_between('<div class="LessonInfoContainer"', '</td>', html):
+			name = chunk.split("<br />")[-3].split("<span>")[-1]
+			room = chunk.replace("</span></div>", "").split(">")[-1]
+			for thingie in room.split(" "):
+				try:
+					room = int(thingie)
+				except:
+					pass
+			time = cre.between('px;">', "<br />", chunk)
+			day = time.split(" ")[0]
+			from_hour = time.split(" ")[1]
+			to_hour = time.split(" ")[3]
+			day_replacements = [["M", "monday"], ["Ti", "tuesday"], ["Ons", "wednesday"], ["To", "thursday"], ["F", "friday"]] 
+			for replacement in day_replacements:
+				if day.startswith(replacement[0]):
+					day = replacement[1]
+			lesson = {"name": name, "room": room, "from": from_hour, "to": to_hour}
+			lessons[day].append(lesson)
+		return lessons

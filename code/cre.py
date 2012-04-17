@@ -20,5 +20,8 @@ def htmlstrip(string):
 	#return pars.unescape(p.sub(' ', stripped))
 	return p.sub(' ', stripped)
 
-def html_breakstrip(html):
-	return html.replace(chr(10), "")
+def html_multispacefix(html):
+	return html.replace("\n", "").replace("\r", "")
+
+def spacestrip(text):
+	return re.sub(" +", " ", text)
