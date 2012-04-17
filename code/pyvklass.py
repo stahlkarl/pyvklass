@@ -329,9 +329,14 @@ class Vklass:
 		return [int(x) for x in cre.all_between('href="MessageRead.aspx\?id=', '&amp;', urllib2.urlopen(self.base_url + "/Messaging/Messages.aspx").read())]
 	
 	def first_messages(self):
-		messages = []
+		i           = 0
+		messages    = []
+		message_ids = self.first_message_ids()
 		for message_id in self.first_message_ids():
+			client.push("Fetching message: %i [%i/%i]" % (message_id, i + 1, len(message_ids)))
 			message = self.message(message_id)
 			messages.append(message)
+			i += 1
+		client.push("\n")
 
 		return messages
