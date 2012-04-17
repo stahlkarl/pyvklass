@@ -7,6 +7,20 @@ class Vklass:
 	profile_picture_dir = "profile_pictures"
 	my_profile_info     = None
 	base_url            = "https://www.vklass.se"
+	configuration_file  = "pyvklass.conf"
+
+	def __init__(self):
+		self.login_from_file()
+	
+	def login_from_file(self):
+		if os.path.exists(self.configuration_file):
+			f = open(self.configuration_file, 'r')
+			conf = json.loads(f.read())
+			f.close()
+			try:
+				self.login(conf['account']['username'], conf['account']['password'])
+			except:
+				client.log("Could not log in to %s with the credentials in %s" % (self.base_url, self.configuration_file))
 
 	def create_tables(self):
 		client.log("Creating tables")

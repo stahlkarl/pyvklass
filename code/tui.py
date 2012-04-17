@@ -2,9 +2,10 @@ import pyvklass, client
 from cmd2 import *
 
 class Tui(Cmd):
-	prompt = "# "
-	days   = ["monday", "tuesday", "wednesday", "thursday", "friday"]
-	v      = pyvklass.Vklass()
+	prompt   = "# "
+	days     = ["monday", "tuesday", "wednesday", "thursday", "friday"]
+	v        = pyvklass.Vklass()
+	messages = []
 	client.log("TIP: Type login or help")
 
 	def do_login(self, args):
@@ -111,17 +112,22 @@ class Tui(Cmd):
 				print "  |  %s  |  %s  |" % (post['date'], post['username'])
 				print "  --> %s" % post['body']
 
+	def do_fetch_messages(self, args):
+		self.messages = self.v.first_messages()
+		self.messages.reverse()
+
 	def do_messages(self, args):
-		messages = self.v.first_messages()
-		messages.reverse()
-		for message_id in range(len(messages)):
-			client.log("[%i] %s" % (message_id, messages[message_id]['title']))
-			client.log("  * From: %s" % messages[message_id]['creator']['name'])
-			client.log("  * Date: %s" % messages[message_id]['created'])
+		if len(self.messages) == 0:
+			self.do_fetch_messages("")
+		
+		for message_id in range(len(self.messages)):
+			client.log("[%i] %s" % (message_id, self.messages[message_id]['title']))
+			client.log("  * From: %s" % self.messages[message_id]['creator']['name'])
+			client.log("  * Date: %s" % self.messages[message_id]['created'])
 			print ""
 
 		message_id = int(client.input("Message id: "))
-		self.print_message(messages[message_id])
+		self.print_message(self.messages[message_id])
 	
 	def do_download(self, args):
 		url, filename = args.split(" ")
