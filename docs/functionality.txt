@@ -1,4 +1,4 @@
-Info as JSON:
+Info as dictionary:
 	* Time summary (presence, late arrival etc)        DONE
 	* Users online                                     DONE
 	* Chat messages                                    DONE
