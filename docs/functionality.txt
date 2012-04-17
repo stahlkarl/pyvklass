@@ -35,3 +35,6 @@ Actions:
 General:
 	* Download file                                    DONE
 	* Create TUI                                       Implementing functionality atm
+	* Email push alerts for
+		* Messages                                     DONE
+		* Events

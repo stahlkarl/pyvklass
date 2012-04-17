@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import cookielib, urllib2, urllib, os, cre, json, client, sqlite3, os, time
 from threading import *
+
 class Vklass:
 	dbc    = sqlite3.connect("vklass.db")
 	cursor = dbc.cursor()
@@ -315,6 +316,7 @@ class Vklass:
 	def message(self, message_id):
 		html                           = urllib2.urlopen("%s/Messaging/MessageRead.aspx?id=%i" % (self.base_url, message_id)).read()
 		message                        = {"attachments": [], "participants": [], "posts": []}
+		message['owner']               = self.username
 		message['body']                = cre.prettify(cre.all_between('<span id="ctl00_ContentPlaceHolder2_postRepeater_ctl.._textLabel">', '</span>', html)[-1])
 		message['title']               = cre.prettify(cre.between('<span id="ctl00_ContentPlaceHolder2_topicLabel">', '</span>', html))
 		message['created']             = cre.prettify(cre.between('<span id="ctl00_ContentPlaceHolder2_dateLabel">', '</span>', html))

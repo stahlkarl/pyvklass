@@ -4,3 +4,4 @@ test.py
 vklass.db
 dump
 pyvklass.conf
+notifier.conf.private

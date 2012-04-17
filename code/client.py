@@ -39,3 +39,15 @@ def dump(data):
 	f = open("dump", "w")
 	f.write(data)
 	f.close()
+
+def load(filename):
+	f = open(filename, 'r')
+	data = f.read()
+	f.close()
+
+	return data
+
+def append(filename, data):
+	f = open(filename, 'a')
+	f.write(data)
+	f.close()
