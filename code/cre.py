@@ -29,4 +29,5 @@ def spacestrip(text):
 	return re.sub(" +", " ", text)
 
 def prettify(text):
-	return unescape(htmlstrip(html_breakstrip(spacestrip(text))))
+	#return unescape(htmlstrip(html_breakstrip(spacestrip(text)))) #Unicode problems with unescape
+	return htmlstrip(html_breakstrip(spacestrip(text)))

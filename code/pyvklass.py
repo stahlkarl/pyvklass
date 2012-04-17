@@ -295,16 +295,28 @@ class Vklass:
 	
 	def message(self, message_id):
 		html                           = urllib2.urlopen("%s/Messaging/MessageRead.aspx?id=%i" % (self.base_url, message_id)).read()
-		message                        = {"attachments": [], "participants": []}
-		message['body']                = cre.prettify(cre.between('<span id="ctl00_ContentPlaceHolder2_postRepeater_ctl00_textLabel">', '</span>', html))
+		message                        = {"attachments": [], "participants": [], "posts": []}
+		message['body']                = cre.prettify(cre.all_between('<span id="ctl00_ContentPlaceHolder2_postRepeater_ctl.._posterLabel">', '</p>', html)[-1])
+		trash                          = cre.all_between('<span id="ctl00_ContentPlaceHolder2_postRepeater_ctl.._posterLabel">', '</p>', html)
+		del trash[-1]
+		for trash in trash:
+			username                   = trash.split("</span>")[0]
+			body                       = trash.split("</span>")[-2].split('_textLabel">')[-1]
+			date                       = cre.between('<span id="ctl00_ContentPlaceHolder2_postRepeater_ctl.._Label1">', '</span>', trash)
+			post = {"username": username, "date": date, "body": body}
+			message['posts'].append(post)
+
 		trash                          = cre.between('<a id="ctl00_ContentPlaceHolder2_creatorLink" href="/User.aspx\?id=', '</a></h3>', html).split('">')
-		message['creator']             = {'id': int(trash[0]), "name": trash[1]}
+		message['creator']             = {'user_id': int(trash[0]), "name": trash[1]}
 		participants_dirty_html_chunks = cre.between('<h3>Deltagare: ', '</h3>', html).split(', ')
 		for dirty_participant_chunk in participants_dirty_html_chunks:
-			id                         = int(cre.between('<a href="/User.aspx\?id=', '">', dirty_participant_chunk))
-			name                       = cre.between('">', '</a>', dirty_participant_chunk)
-			participant                = {"id": id, "name": name}
+			user_id                    = int(cre.between('<a href="/User.aspx\?id=', '">', dirty_participant_chunk))
+			username                   = cre.between('">', '</a>', dirty_participant_chunk)
+			participant                = {"user_id": user_id, "username": username}
 			message['participants'].append(participant)
+			for post_id in range(len(message['posts'])):
+				if message['posts'][post_id]['username'] == username:
+					message['posts'][post_id]['user_id'] = user_id
 		
 		dirty_attachment_html_chunks   = cre.all_between('_AttachmentLink" href="', '</a></li>', html)
 		for chunk in dirty_attachment_html_chunks:
