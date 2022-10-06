@@ -5,3 +5,6 @@ vklass.db
 dump
 pyvklass.conf
 notifier.conf.private
+.replit
+replit.*
+venv/
