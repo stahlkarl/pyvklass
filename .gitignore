@@ -8,3 +8,5 @@ notifier.conf.private
 .replit
 replit.*
 venv/
+poetry.lock
+pyproject.toml
